@@ -1,1 +1,138 @@
 # Homework-4
+---
+title: 'Homework #4'
+author: "Adil Ryskulov"
+date: "10/10/2020"
+Group members: "Adil Ryskulov, Zhanna Sarsenova, Mst Parvin and Ahabyona James"
+output: html_document
+---
+
+
+
+# Determining the subgroup to use for our regression analysis:
+
+For this analysis we desided to determine an observatio group those who are aged from 25 to 55, in active labor force and working at leas 35 hours per wheak.This group will provide most acurate reflaction of labor market and excludes those who are a full time students and retieries.
+
+```{r echo=TRUE}
+load("C:/Users/Acer/Desktop/CCNY/2020/Fall 2020/Statistics and Introduction to Econometrics ECO B2000 2RS/R/PUMS data/ny/acs2017_ny_data.RData")
+attach(acs2017_ny)
+use_varb <- (AGE >= 25) & (AGE <= 55) & (LABFORCE == 2) & (WKSWORK2 > 4) & (UHRSWORK >= 35)
+dat_use <- subset(acs2017_ny,use_varb) #
+detach()
+attach(dat_use)
+```
+
+
+
+# Warieble in regression model.
+
+We consider that the main factor of affecting wages are the level of education, gender, age, and race.
+As of base profile we will considered a white male without high school degree, and compare how other factors benefit or discriminate people incomparison to base profile.
+
+In this work we use terms of "benefit" and "discriminate" in order to describe an eefect of factor on wage income where "benefit" refers to possitive effect and "discriminate" refers to negative effetc.
+
+
+
+# First of all, we would like to consider each factors separatly.
+
+
+
+----- First of all, we will analize how gender effects income from wages? -----
+
+In this analysis we used variable [female] where it referes to femail
+
+```{r echo=TRUE}
+model_gender <- lm(INCWAGE ~ female)
+summary(model_gender)
+```
+
+The analysis revealed that female factor is statisticaly significant and we can conclude that it discriminates income from wages by $(18,752.30).
+In this analysis we considered only gender factor while ignoring rest and the base profice is reprecented by male whos mean income from wage estimated to be $80,963.90, meanwhile female would be descremenated and have estimated income from wage of $62,211.60.
+
+
+
+----- Secondy, we will analize how education level effects income from wages? -----
+
+In this analysis we used varieble of [educ_hs] for high school degree, [educ_somecoll] for some college credits, [educ_college] for college degree, and [educ_advdeg] for advanced degree.
+
+```{r echo=TRUE}
+model_education <- lm(INCWAGE ~ educ_hs + educ_somecoll + educ_college + educ_advdeg)
+summary(model_education)
+```
+
+In this analysis all four education level factors were statistically significant and we can conclude that higher education level benefit individual by providing an oportunity of higher income from wages.
+In this analysis we considered only education level factors while ignoring rest and the base profile is reprecented by individuals without high school degree whos mean income from wage estimated to be $33,770. Meanwhile:
+- High school degree benefits by $12,437 and mean estimated wage income is $46,207.
+- Some college credits benefit by $20,744 and mean estimated wage income is $54,514.
+- College degree benefit by $52,749 and mean estimated wage income is $86,519.
+- Advance degree benefit by $79,379 and mean estimated wage income is $113,149.
+
+
+
+----- Also, we will analize how race effects income from wages? -----
+
+In this analysis we used varieble of [AfAm] for African Americans, [Asian] for Asians, [Amindian] for American Indians, and [race_oth] for otehr race.
+
+```{r echo=TRUE}
+model_race <- lm(INCWAGE ~ AfAm + Asian + Amindian + race_oth)
+summary(model_race)
+```
+
+In this analysis all four factors of race determination were statistically significant and we can conclyde that race does effect of income from wages.
+In this analysis we consider only race factors while ignoring rest and the base profile is reprecented by white individual whith mean estimated income from wage of $79,959.50. Meanwhile:
+- African American descriminated by $(22,469.20) and mean estimated wage income is $57,490.30.
+- Asian benefits by $11,848.70 and mean estimated wage income in $88,808.20.
+- American Indian descriminated by $26,440.20 and mean estimated wage income is $50,519.30.
+- Other rases discriminated by $21,697.70 and mean estimated wage income is $55,261.80.
+
+
+
+----- Finaly, we will analize how ethnicity effects income from wages? -----
+
+In this analysis we used varieble [HISPAN] for hispanic ethnicity.
+
+```{r echo=TRUE}
+model_ethnicity <- lm(INCWAGE ~ HISPAN)
+summary(model_ethnicity)
+```
+
+In this analysis Hispanic ethnicity factor was statisticaly significan and we can conclude that ethnicity effect of income from wages.
+In this analyssi we consider hisponic ethnicity only ingnoring rest and the base profile is non-hispanic individual with mean estimated income from wage is $75,270.80. While, hispanic ethnicity discriminates by $(6,523.40) and mean estimated wage income of $68,747.40.
+
+
+
+In comclution we find out that each factor diferenciating individual by gender, level of education and race will effect on income earneed when considered separatly.
+
+
+
+# Now, we combined gender, education level and race and added Age to model. 
+
+We added Age to model because we belive age leads to seninorily and higher productivity, thus, compensation should be higher.
+
+```{r echo=TRUE}
+model_demographic <- lm(INCWAGE ~ female + educ_hs + educ_somecoll + educ_college + educ_advdeg + AfAm + Asian + Amindian + race_oth + HISPAN + AGE)
+summary(model_demographic)
+```
+
+In this analysis we combined all varieble and base prfile reprecented by while non hispanic male with no high school degree. The age level was not in base profile.
+This analysis considered to be more acurate than the analysis with only one varieble. The value of R-square which indicated how acurate factors estimate the depended varieble is equal to 0.15 in this analysis, while in previous analysis this value was either 0.01 or below.
+However, in this analysis factors of race diferenciation of Asians [Asian] and american indians [Amindian] are not statisticaly significant and should be colcluded that these two variebles does not effect on income from wage. The effect of [Asian] on wage income is estimated to be $673.06, which is not significantly different and could be concluded that Asian race equay treated as white rece. Howeve, the [Amindian] race discriminated by $(9,168.93) compared to white race - this is higher than other rase discrimination of $(7,618.42). Thus, we cannot conclude that [Amindia] has no effect on wage incomes and treated similar as white race.
+
+In final regression function, we excluded Asian factor from regression and assuming that Asians treated equali as whites treated. However, American Indians were left within function and possible effect in statistical significancy could be due to data which does not have acurate date in regard Amrican Induans.
+
+```{r echo=TRUE}
+model_demographic2 <- lm(INCWAGE ~ female + educ_hs + educ_somecoll + educ_college + educ_advdeg + AfAm + Amindian + race_oth + HISPAN + AGE)
+summary(model_demographic2)
+```
+
+
+
+# Conclution
+
+In this analysis we analyzed how differecnt factors can effect wage income. We find that single factor estimated is not acurate as multiple factor estimator. 
+The white non-hispanic male individual wothout high school diplema was choosen as a base profice and other factors were compared.
+We found that gender, racial, and ethnic discrimination exsist. Also, we found that higher education level and higher age due to seniorily results in higher income from wages. Analysis also revealed that anians treated equali as whites and there is an issue with American Indians precence in data.
+
+```{r echo=TRUE}
+detach()
+```
